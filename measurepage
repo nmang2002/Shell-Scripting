@@ -1,0 +1,33 @@
+  #!/bin/bash
+
+  # Navya Mangipudi
+  # CSE 374, Spring 2023
+  # 5/09/2023
+  # H4, Part 2: measurepage: This code takes in a URl as an argument and outputs the 
+  # page size in words. If the url provided is successfully downloaded, the script exists with 
+  # a return code of 0 after printing the number of words on the page to stdout.
+  
+  # if no argument provided, then print error message to stderr, and exit with code 1
+  if [ $# -eq 0 ]; then
+    echo "Error: no argument provided." >&2 # printing error to stdout
+    exit 1 # exit code 1
+  fi
+
+  # add current directory to path to use wordcount instead of .wordcount
+  export PATH=$PATH:.
+
+  # download contents of argument "$1" and save to tempfile
+  # output is redirected to /dev/null in order to suppress output
+  wget -O tempfile -q "$1" > /dev/null
+  
+  # checking if tempfile exists and has a size greater than 0
+  # if it does not, the script simply prints the number 0
+  if [ ! -s tempfile ]; then
+	  echo "0" >&1 
+  else 
+	  wordcount -w tempfile # if file exists, function wordcount is used on tempfile
+	  rm tempfile # tempfile is then deleted
+  fi
+
+  exit 0 # exit with code 0 (successful exit)
+

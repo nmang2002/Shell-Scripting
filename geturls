@@ -1,0 +1,40 @@
+  #!/bin/bash 
+  
+   # Navya Mangipudi
+  # CSE 374, Spring 2023
+  # 5/09/2023
+  # H4, Part 1: geturls: This code takes in two arguments: the name of the output file, and
+  # the name of the input html file. Using these, this script extracts the urls nd writes them
+  # into a text file. 
+
+  # If less than two arguments are provided, then usage error printed and exit with return code 1
+  if [ $# -lt 2 ]; then
+    echo "Usage: Less than two inputs." >&2 # usage error printed to stderr
+    exit 1 # exit with return code 1
+  fi
+  
+  # If input file does not exist, then error printed & exit with return code 1
+  if [ ! -f "$2" ]; then
+    echo "Error: input file does not exist." >&2 # error printed to stderr
+    exit 1 # exit with return code 1
+  fi
+
+  # if output file exists, warning is printed and output file is overwritten
+  if [ -f "$1" ]; then
+    echo "Warning: output file already exists." >&2 # warning printed to stderr
+    > "$1" # file overwritten
+  elif [ ! -f "$1" ]; then # if output file doesn't exist, new file created
+    echo "Creating new file." >&2 
+    touch "$1" # creating new file
+  fi
+
+  # extract links from .c files using grep to find pattern [xyz_string].c in lines
+  grep -Eo 'href="[^\"]+.c"' "$2" | 
+  # searches previous grep command for strings following pattern where string starts with 
+  # characters: . / _ ? or letters a-z or numbers 0-9 which is followed by ".c". 
+  grep -Eo '[./_?a-zA-Z0-9]+.c' |
+  # replaces occurences of .. in the url and appends to file "$1"
+  sed 's#\.\.#https://courses.cs.washington.edu/courses/cse374/23sp#g' >> "$1" 
+
+  exit 0 # exit with code 0 (successful exit)
+~           

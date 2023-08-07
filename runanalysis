@@ -1,0 +1,49 @@
+  #!/bin/bash
+
+  # Navya Mangipudi
+  # CSE 374, Spring 2023
+  # 5/09/2023
+  # H4, Part 3: runanalysis: This code takes in two arguments: the name of the file to write
+  # outputs to and, a file with a list of URL's. Runanalysis
+  # outputs the index number (numbers URLs from 1-N), and uses measurepage in order to output
+  # the page size to the user.  
+
+  # If there are fewer than 2 arguments, usage error printed & exited with a 1
+  if [ "$#" -lt 2 ]; then
+    echo "Usage: fewer than 2 arguments provided." >&2 # error printed to stderr
+    exit 1
+  fi
+  
+  # If appropriate file is not provided as argument 2, then exit with return code 1
+  if [ ! -f "$2" ]; then
+    echo "Error: appropriate files not provided." >&2 # error printed to stderr
+    exit 1
+  fi
+
+  # If argument 1 is an existing file, warning is printed and file is overwritten
+  if [ -f "$1" ]; then
+    echo "Warning: file exists. Overwriting file." >&2 # warning printed to stderr
+    > "$1" # overwriting file
+  else
+    touch "$1" # if file doesn't exist, file is newly created
+  fi
+
+  # index number: numbers URLs from 1-N in order encountered
+  index=1
+
+  # using a while loop with IFS (internal field separator, special bash variable) which 
+  # can read in the lines of URL. 
+  while IFS= read -r url; do
+    echo "Performing word count measurement on $url..."
+    size=$(./measurepage "$url") # using measurepage on each url line, stored in variable size
+    if [ "$size" -gt 0 ]; then # check if size is greater than 0
+      echo "$index $size" >> "$1" # if size if greater than 0, append to output file "$1"
+      echo "...successful"
+      index=$((index+1)) # increment index 
+    else # otherwise, do nothing
+      echo "...failure"
+    fi
+  done < "$2" 
+
+  exit 0 # exit script with 0 (successful exit)
+
